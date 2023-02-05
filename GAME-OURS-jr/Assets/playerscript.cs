@@ -16,8 +16,8 @@ public class playerscript : MonoBehaviour
     {
         float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * pozX;
         float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * pozY;
-        xrot += mouseX;
-        yrot -= mouseY;
+        xrot -= mouseY;
+        yrot += mouseX;
         xrot = Mathf.Clamp(xrot, -90f, 90f);
         transform.rotation = Quaternion.Euler(xrot, yrot, 0);
         ori.rotation = Quaternion.Euler(0, yrot, 0);
