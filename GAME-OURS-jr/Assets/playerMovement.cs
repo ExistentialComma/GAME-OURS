@@ -6,14 +6,23 @@ public class playerMovement : MonoBehaviour
 {
     // Start is called before the first frame update
     [Header("Movement")]
-    public float moveSpeed;
+    private float moveSpeed;
+    public float walkspeed;
+    public float sprintspeed;
     public float grounddrag;
+    [Header("Jumping")]
     public float jumpf;
     public float jumpc;
     public float air;
-    bool readytojump;
-    [Header("Keybinds")]
+    bool readytojump = true;
+    [Header("Crouching")]
+    public float crouchspeed;
+    public float crouchyscale;
+    private float startyscale;
+    [Header("Cheite")]
     public KeyCode jumpKey = KeyCode.Space;
+    public KeyCode sprintKey = KeyCode.LeftShift;
+    public KeyCode crouchKey = KeyCode.LeftControl;
     [Header("Ground Check")]
     public float playerHeight;
     public LayerMask whatitis;
@@ -23,10 +32,20 @@ public class playerMovement : MonoBehaviour
     float vertical;
     Vector3 movementDirection;
     Rigidbody rb;
+    public MovementState state;
+    public enum MovementState
+    {
+        walking,
+        sprinting,
+        crouching,
+        air
+    }
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
+        startyscale = transform.localScale.y;
+
             
 
     }
@@ -35,6 +54,7 @@ public class playerMovement : MonoBehaviour
         belle = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatitis);
         Inputs();
         SpeedControl();
+        StateHandler();
         if (belle)
         {
             rb.drag = grounddrag;
@@ -53,11 +73,46 @@ public class playerMovement : MonoBehaviour
     {
         horizont = Input.GetAxisRaw("Horizontal");
         vertical = Input.GetAxisRaw("Vertical");
-        if(Input.GetKey(jumpKey) && belle)
+        if(Input.GetKey(jumpKey) && belle && readytojump)
         {
-            readytojump = false;
+            
             jump();
+            
             Invoke(nameof(Resetjump), jumpc);
+            readytojump = false;
+            
+        }
+        if (Input.GetKeyDown(crouchKey))
+        {
+            transform.localScale = new Vector3(transform.localScale.x, crouchyscale, transform.localScale.z);
+            rb.AddForce(Vector3.down * 10f, ForceMode.Impulse);
+
+        }
+        if (Input.GetKeyUp(crouchKey))
+        {
+            transform.localScale = new Vector3(transform.localScale.x, startyscale, transform.localScale.z);
+        }
+    }
+    private void StateHandler()
+    {
+        if (Input.GetKeyDown(crouchKey))
+        {
+            state = MovementState.crouching;
+            moveSpeed = crouchspeed;
+        }
+        if(belle && Input.GetKey(sprintKey))
+        {
+            state = MovementState.sprinting;
+            moveSpeed = sprintspeed;
+        }
+        else if (belle)
+        {
+            state = MovementState.walking;
+            moveSpeed = walkspeed;
+        }
+        else
+        {
+            state = MovementState.air;
         }
     }
     private void MovePlayer()
