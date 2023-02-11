@@ -9,6 +9,9 @@ public class playerMovement : MonoBehaviour
     private float moveSpeed;
     public float walkspeed;
     public float sprintspeed;
+    public float slideSpeed;
+    private float desireMoveSpeed;
+    private float lastDesiredMoveSpeed;
     public float grounddrag;
     [Header("Jumping")]
     public float jumpf;
@@ -22,11 +25,16 @@ public class playerMovement : MonoBehaviour
     [Header("Cheite")]
     public KeyCode jumpKey = KeyCode.Space;
     public KeyCode sprintKey = KeyCode.LeftShift;
-    public KeyCode crouchKey = KeyCode.LeftControl;
+    public KeyCode crouchKey = KeyCode.C;
     [Header("Ground Check")]
     public float playerHeight;
     public LayerMask whatitis;
     bool belle;
+    [Header("Slope Handling")]
+    public float maxSlopeAngle;
+    private RaycastHit slopehit;
+    private bool exitingslope;
+
     public Transform orientation;
     float horizont;
     float vertical;
@@ -38,8 +46,10 @@ public class playerMovement : MonoBehaviour
         walking,
         sprinting,
         crouching,
+        sliding,
         air
     }
+    public bool sliding;
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -85,7 +95,7 @@ public class playerMovement : MonoBehaviour
         if (Input.GetKeyDown(crouchKey))
         {
             transform.localScale = new Vector3(transform.localScale.x, crouchyscale, transform.localScale.z);
-            rb.AddForce(Vector3.down * 10f, ForceMode.Impulse);
+            rb.AddForce(Vector3.down * 1f, ForceMode.Impulse);
 
         }
         if (Input.GetKeyUp(crouchKey))
@@ -95,30 +105,74 @@ public class playerMovement : MonoBehaviour
     }
     private void StateHandler()
     {
-        if (Input.GetKeyDown(crouchKey))
+        if (sliding)
+        {
+            state = MovementState.sliding;
+            if(onslope() && rb.velocity.y < 0.1f)
+            {
+                desireMoveSpeed = slideSpeed;
+            }
+            else
+            {
+                desireMoveSpeed = sprintspeed;
+            }
+        }
+        else if (Input.GetKeyDown(crouchKey))
         {
             state = MovementState.crouching;
-            moveSpeed = crouchspeed;
+            desireMoveSpeed = crouchspeed;
         }
-        if(belle && Input.GetKey(sprintKey))
+        else if(belle && Input.GetKey(sprintKey))
         {
             state = MovementState.sprinting;
-            moveSpeed = sprintspeed;
+            desireMoveSpeed = sprintspeed;
         }
         else if (belle)
         {
             state = MovementState.walking;
-            moveSpeed = walkspeed;
+            desireMoveSpeed = walkspeed;    
         }
         else
         {
             state = MovementState.air;
         }
+        if (Mathf.Abs(desireMoveSpeed - lastDesiredMoveSpeed) > 4f && moveSpeed != 0)
+        {
+            StopAllCoroutines();
+            StartCoroutine(SmoothlyLerpMoveSpeed());
+        }
+        else
+        {
+            moveSpeed = desireMoveSpeed;
+        }
+        lastDesiredMoveSpeed = desireMoveSpeed;
+
+    }
+    private IEnumerator SmoothlyLerpMoveSpeed()
+    {
+        float time = 0;
+        float difference = Mathf.Abs(desireMoveSpeed - moveSpeed);
+        float startValue = moveSpeed;
+        while (time < difference)
+        {
+            moveSpeed = Mathf.Lerp(startValue, desireMoveSpeed, time / difference);
+            time += Time.deltaTime;
+            yield return null;
+        }
+        moveSpeed = desireMoveSpeed;
     }
     private void MovePlayer()
     {
         movementDirection = orientation.forward * vertical + orientation.right * horizont;
-        if (belle)
+        if (onslope() && !exitingslope)
+        {
+            rb.AddForce(GetSlopeMoveDirection(movementDirection) * moveSpeed * 20f, ForceMode.Force);
+            if(rb.velocity.y > 0)
+            {
+                rb.AddForce(Vector3.down * 80f, ForceMode.Force);
+            }
+        }
+        else if (belle)
         {
             rb.AddForce(movementDirection.normalized * moveSpeed * 10f, ForceMode.Force);
         }
@@ -126,23 +180,49 @@ public class playerMovement : MonoBehaviour
         {
             rb.AddForce(movementDirection.normalized * moveSpeed * 10f * air, ForceMode.Force);
         }
+        rb.useGravity = !onslope();
     }
     private void SpeedControl()
     {
-        Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-        if (flatVel.magnitude > moveSpeed)
+        if (onslope() && !exitingslope)
         {
-            Vector3 limitedVel = flatVel.normalized * moveSpeed;
-            rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);
-        } 
+            if (rb.velocity.magnitude > moveSpeed)
+                rb.velocity = rb.velocity.normalized * moveSpeed;
+        }
+        else
+        {
+            Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+
+            if (flatVel.magnitude > moveSpeed)
+            {
+                Vector3 limitedVel = flatVel.normalized * moveSpeed;
+                rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);
+            }
+        }
     }
     private void jump()
     {
+        exitingslope = true;
         rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
         rb.AddForce(transform.up * jumpf, ForceMode.Impulse);
     }
     private void Resetjump()
     {
         readytojump = true;
+        exitingslope = false;
+    }
+    public bool onslope()
+    {
+        if(Physics.Raycast(transform.position, Vector3.down, out slopehit, playerHeight * 0.5f + 0.3f))
+        {
+            float angle = Vector3.Angle(Vector3.up, slopehit.normal);
+            return angle < maxSlopeAngle && angle != 0;
+
+        }
+        return false;
+    }
+    public Vector3 GetSlopeMoveDirection(Vector3 direction)
+    {
+        return Vector3.ProjectOnPlane(direction, slopehit.normal).normalized;
     }
 }
