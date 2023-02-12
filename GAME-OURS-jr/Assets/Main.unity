@@ -849,7 +849,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   walkspeed: 3
-  sprintspeed: 10
+  sprintspeed: 10.18
   slideSpeed: 30
   grounddrag: 1
   jumpf: 5
