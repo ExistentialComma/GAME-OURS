@@ -25,7 +25,30 @@ public class WheelController : MonoBehaviour
     private float currentBrakeForce = 0f;
     private float currentTurnAngle = 0f;
 
-    
+    private void FixedUpdate()
+    {
+        currentAcceleration = acceleration * Input.GetAxis("Vertical");
+
+        if (Input.GetKey(KeyCode.Space))
+        {
+            currentBrakeForce = brakingForce;
+        }
+        else
+        {
+            currentBrakeForce = 0f;
+        }
+        frontRight.motorTorque = currentAcceleration;
+        frontLeft.motorTorque = currentAcceleration;
+
+        frontRight.brakeTorque = currentBrakeForce;
+        rearRight.brakeTorque = currentBrakeForce;
+        rearLeft.brakeTorque = currentBrakeForce;
+        frontLeft.brakeTorque = currentBrakeForce;
+
+        currentTurnAngle = maxTurnAngle * Input.GetAxis("Horizontal");
+        frontLeft.steerAngle = currentTurnAngle;
+        frontRight.steerAngle = currentTurnAngle;
+    }
 
 
 
