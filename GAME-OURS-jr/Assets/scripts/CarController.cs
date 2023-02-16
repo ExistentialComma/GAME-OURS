@@ -4,82 +4,67 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CarController : MonoBehaviour
-{ 
+{
 
-    transform.position = tmpPos; // Assign back all Vector3
+    [SerializeField] WheelCollider frontRight;
+    [SerializeField] WheelCollider frontLeft;
+    [SerializeField] WheelCollider rearRight;
+    [SerializeField] WheelCollider rearLeft;
 
-    private float horizontalInput, verticalInput;
-    private float currentSteerAngle, currentbreakForce;
-    private bool isBreaking;
+    [SerializeField] Transform frontRightTransform;
+    [SerializeField] Transform rearRightTransform;
+    [SerializeField] Transform frontLeftTransform;
+    [SerializeField] Transform rearLeftTransform;
+    //drag each wheel wesh to those transform things
 
-    // Settings
-    [SerializeField] private float motorForce, breakForce, maxSteerAngle;
+    public float acceleration = 500f;
+    public float brakingForce = 300f;
+    public float maxTurnAngle = 15f;
 
-    // Wheel Colliders
-    [SerializeField] private WheelCollider frontLeftWheelCollider, frontRightWheelCollider;
-    [SerializeField] private WheelCollider rearLeftWheelCollider, rearRightWheelCollider;
-
-    // Wheels
-    [SerializeField] private Transform frontLeftWheelTransform, frontRightWheelTransform;
-    [SerializeField] private Transform rearLeftWheelTransform, rearRightWheelTransform;
+    private float currentAcceleration = 0f;
+    private float currentBrakeForce = 0f;
+    private float currentTurnAngle = 0f;
 
     private void FixedUpdate()
     {
-        GetInput();
-        HandleMotor();
-        HandleSteering();
-        UpdateWheels();
+        currentAcceleration = acceleration * Input.GetAxis("Vertical");
+
+        if (Input.GetKey(KeyCode.S))
+        {
+            currentBrakeForce = brakingForce;
+        }
+        else
+        {
+            currentBrakeForce = 0f;
+        }
+        frontRight.motorTorque = currentAcceleration;
+        frontLeft.motorTorque = currentAcceleration;
+
+        frontRight.brakeTorque = currentBrakeForce;
+        rearRight.brakeTorque = currentBrakeForce;
+        rearLeft.brakeTorque = currentBrakeForce;
+        frontLeft.brakeTorque = currentBrakeForce;
+
+        currentTurnAngle = maxTurnAngle * Input.GetAxis("Horizontal");
+        frontLeft.steerAngle = currentTurnAngle;
+        frontRight.steerAngle = currentTurnAngle;
+
+        UpdateWheel(frontLeft, frontLeftTransform);
+        UpdateWheel(rearLeft, rearLeftTransform);
+        UpdateWheel(frontRight, frontRightTransform);
+        UpdateWheel(rearRight, rearRightTransform);
+
     }
 
-    private void GetInput()
+    void UpdateWheel(WheelCollider col, Transform trans)
     {
-        // Steering Input
-        horizontalInput = Input.GetAxis("Horizontal");
+        Vector3 position;
+        Quaternion rotation;
+        col.GetWorldPose(out position, out rotation);
 
-        // Acceleration Input
-        verticalInput = Input.GetAxis("Vertical");
-
-        // Breaking Input
-        isBreaking = Input.GetKey(KeyCode.Space);
+        trans.position = position;
+        trans.rotation = rotation;
     }
 
-    private void HandleMotor()
-    {
-        frontLeftWheelCollider.motorTorque = verticalInput * motorForce;
-        frontRightWheelCollider.motorTorque = verticalInput * motorForce;
-        currentbreakForce = isBreaking ? breakForce : 0f;
-        ApplyBreaking();
-    }
 
-    private void ApplyBreaking()
-    {
-        frontRightWheelCollider.brakeTorque = currentbreakForce;
-        frontLeftWheelCollider.brakeTorque = currentbreakForce;
-        rearLeftWheelCollider.brakeTorque = currentbreakForce;
-        rearRightWheelCollider.brakeTorque = currentbreakForce;
-    }
-
-    private void HandleSteering()
-    {
-        currentSteerAngle = maxSteerAngle * horizontalInput;
-        frontLeftWheelCollider.steerAngle = currentSteerAngle;
-        frontRightWheelCollider.steerAngle = currentSteerAngle;
-    }
-
-    private void UpdateWheels()
-    {
-        UpdateSingleWheel(frontLeftWheelCollider, frontLeftWheelTransform);
-        UpdateSingleWheel(frontRightWheelCollider, frontRightWheelTransform);
-        UpdateSingleWheel(rearRightWheelCollider, rearRightWheelTransform);
-        UpdateSingleWheel(rearLeftWheelCollider, rearLeftWheelTransform);
-    }
-
-    private void UpdateSingleWheel(WheelCollider wheelCollider, Transform wheelTransform)
-    {
-        Vector3 pos;
-        Quaternion rot;
-        wheelCollider.GetWorldPose(out pos, out rot);
-        wheelTransform.rotation = rot;
-        wheelTransform.position = pos;
-    }
 }
