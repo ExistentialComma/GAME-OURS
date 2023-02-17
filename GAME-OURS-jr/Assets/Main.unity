@@ -347,7 +347,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2536ca96cdfb58544a3631ce16bde88a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraPosition: {fileID: 892797158}
+  cameraPosition: {fileID: 0}
 --- !u!4 &269779629
 Transform:
   m_ObjectHideFlags: 0
@@ -1035,7 +1035,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pozX: 450
   pozY: 450
-  ori: {fileID: 1921392089}
+  ori: {fileID: 0}
 --- !u!1 &982052197
 GameObject:
   m_ObjectHideFlags: 0
@@ -2443,8 +2443,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CarController: {fileID: 919132147536772271}
-  Player: {fileID: 1280007807}
-  DriveUI: {fileID: 1078016897}
+  Car: {fileID: 543450651995301399}
+  Player: {fileID: 0}
+  PlayerCam: {fileID: 0}
+  CarCam: {fileID: 0}
+  DriveUi: {fileID: 0}
 --- !u!65 &919132147536772275
 BoxCollider:
   m_ObjectHideFlags: 0
