@@ -17,9 +17,9 @@ public class CarController : MonoBehaviour
     [SerializeField] Transform rearLeftTransform;
     //drag each wheel wesh to those transform things
 
-    public float acceleration = 500f;
+    public float acceleration = 700f;
     public float brakingForce = 300f;
-    public float maxTurnAngle = 15f;
+    public float maxTurnAngle = 30f;
 
     private float currentAcceleration = 0f;
     private float currentBrakeForce = 0f;
@@ -29,7 +29,7 @@ public class CarController : MonoBehaviour
     {
         currentAcceleration = acceleration * Input.GetAxis("Vertical");
 
-        if (Input.GetKey(KeyCode.S))
+        if (Input.GetKey(KeyCode.Space))
         {
             currentBrakeForce = brakingForce;
         }
