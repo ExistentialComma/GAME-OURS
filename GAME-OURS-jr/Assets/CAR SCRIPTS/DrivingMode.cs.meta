@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:GAME-OURS-jr/Assets/movement.cs.meta
+guid: 4d6aa3e0f9fead24195c434ca8a80ba6
+========
+guid: 9679ab4f0aab89d498b17fb1aedadf58
+>>>>>>>> main:GAME-OURS-jr/Assets/CAR SCRIPTS/DrivingMode.cs.meta
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
