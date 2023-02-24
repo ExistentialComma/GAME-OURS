@@ -2346,7 +2346,7 @@ GameObject:
   - component: {fileID: 1313183200}
   - component: {fileID: 1313183199}
   m_Layer: 0
-  m_Name: main
+  m_Name: MainCarBody
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3263,7 +3263,9 @@ MonoBehaviour:
   acceleration: 700
   brakingForce: 300
   maxTurnAngle: 30
-  carControllerScript: 0
+  currentAcceleration: 0
+  currentBrakeForce: 0
+  currentTurnAngle: 0
 --- !u!65 &2011958078
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3290,6 +3292,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Player: {fileID: 945448285}
+  Car: {fileID: 1313183197}
+  wheelFL: {fileID: 0}
+  wheelFR: {fileID: 0}
   inCar: 0
   carController: {fileID: 2011958077}
   mainCamera: {fileID: 1599578430}

@@ -5,11 +5,15 @@ using UnityEngine;
 public class CarEntry : MonoBehaviour
 {
     public GameObject Player;
+    public GameObject Car;
+    public Transform wheelFL;
+    public Transform wheelFR;
     public bool inCar;
     public CarController carController;
     public Camera mainCamera;
     public Camera driveCamera;
-    Vector3 exitPosition = new Vector3(0, 3, 5);
+    
+    
 
     private void Start()
     {
@@ -20,14 +24,17 @@ public class CarEntry : MonoBehaviour
         if (Input.GetKey(KeyCode.F) && inCar == true)
         {
             inCar = false;
+            Vector3 exitPosition = Car.transform.position + new Vector3(0, 5, 0);
             Player.transform.position = exitPosition;
+            
             mainCamera.enabled = !mainCamera.enabled;
             driveCamera.enabled = !driveCamera.enabled;
 
             Player.gameObject.SetActive(true);
             carController.enabled = !carController.enabled;
-
         }
+        
+        
     }
     private void OnTriggerEnter(Collider other)
     {

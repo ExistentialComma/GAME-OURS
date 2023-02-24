@@ -21,11 +21,11 @@ public class CarController : MonoBehaviour
     public float brakingForce = 300f;
     public float maxTurnAngle = 30f;
 
-    private float currentAcceleration = 0f;
-    private float currentBrakeForce = 0f;
-    private float currentTurnAngle = 0f;
+    public float currentAcceleration = 0f;
+    public float currentBrakeForce = 0f;
+    public float currentTurnAngle = 0f;
 
-    public bool carControllerScript;
+    //public bool carControllerScript;
 
     public void FixedUpdate()
     {
