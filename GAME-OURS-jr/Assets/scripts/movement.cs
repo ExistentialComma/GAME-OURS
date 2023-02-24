@@ -40,7 +40,7 @@ public class movement : MonoBehaviour
         sprinting,
         air
     }
-
+    
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -50,23 +50,23 @@ public class movement : MonoBehaviour
     }
     private void Update()
     {
-        belle = Physics.Raycast(transform.position, Vector3.down, height * 1f + 0.2f, whatitis);
-        myinput();
-        SpeedControl();
-        StateHandler();
-        if (belle)
-        {
-            rb.drag = grounddrag;
-        }
-        else
-        {
-            rb.drag = 0;
-        }
-
+            belle = Physics.Raycast(transform.position, Vector3.down, height * 1f + 0.2f, whatitis);
+            myinput();
+            SpeedControl();
+            StateHandler();
+            if (belle)
+            {
+                rb.drag = grounddrag;
+            }
+            else
+            {
+                rb.drag = 0;
+            }
+        
     }
-    private void FixedUpdate()
+    public void FixedUpdate()
     {
-        Moving();
+            Moving();
     }
     private void myinput()
     {
@@ -139,4 +139,5 @@ public class movement : MonoBehaviour
     {
         readytojump = true;
     }
+    
 }

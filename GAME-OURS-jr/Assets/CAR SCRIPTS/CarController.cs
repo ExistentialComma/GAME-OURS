@@ -25,8 +25,11 @@ public class CarController : MonoBehaviour
     private float currentBrakeForce = 0f;
     private float currentTurnAngle = 0f;
 
-    private void FixedUpdate()
+    public bool carControllerScript;
+
+    public void FixedUpdate()
     {
+        
         currentAcceleration = acceleration * Input.GetAxis("Vertical");
 
         if (Input.GetKey(KeyCode.Space))
@@ -53,7 +56,6 @@ public class CarController : MonoBehaviour
         UpdateWheel(rearLeft, rearLeftTransform);
         UpdateWheel(frontRight, frontRightTransform);
         UpdateWheel(rearRight, rearRightTransform);
-
     }
 
     void UpdateWheel(WheelCollider col, Transform trans)
@@ -65,6 +67,9 @@ public class CarController : MonoBehaviour
         trans.position = position;
         trans.rotation = rotation;
     }
-
-
+    
+        
+    
+    
+    
 }
